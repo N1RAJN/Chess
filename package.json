@@ -1,0 +1,23 @@
+{
+  "name": "chess",
+    "private" : true,
+    "workspaces" : ["frontend", "backend"],
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/N1RAJN/Chess.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/N1RAJN/Chess/issues"
+  },
+  "homepage": "https://github.com/N1RAJN/Chess#readme"
+}
