@@ -1,4 +1,10 @@
-const app = () => {
-    return <h1>hello World</h1>;
+import ChessBoard from "./components/ChessBoard.jsx";
+import "./style/chessboard.css";
+
+const App = () => {
+    return (
+        <ChessBoard key={"chessboard"}></ChessBoard>
+    )
+
 }
-export default app;
+export default App;
