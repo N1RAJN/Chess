@@ -1,9 +1,9 @@
-import ChessBoard from "./components/ChessBoard.jsx";
-import "./style/chessboard.css";
+import PlayField from "./components/PlayField";
+import "./style/playfield.css";
 
 const App = () => {
     return (
-        <ChessBoard key={"chessboard"}></ChessBoard>
+        <PlayField />
     )
 
 }
