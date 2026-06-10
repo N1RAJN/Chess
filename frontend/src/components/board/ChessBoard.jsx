@@ -1,5 +1,5 @@
 import Square from "./Square.jsx";
-const ChessBoard = () => {
+function ChessBoard() {
     return (
         <div className="chessboard">
             {Array.from({ length: 8 }, (_, row) => {
