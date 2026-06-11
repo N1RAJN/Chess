@@ -1,4 +1,4 @@
-export const startingposition = [
+export const startingPosition = [
   ["bR", 1, 8],
   ["bN", 2, 8],
   ["bB", 3, 8],

@@ -1,7 +1,13 @@
+import { useContext } from "react";
+import { FlippedContext } from "../../contexts/FlippedContext.js";
 import Square from "./Square.jsx";
+
 function ChessBoard() {
+    const isFlipped = useContext(FlippedContext);
+    const boardState = isFlipped ? "flipped" : "";
+
     return (
-        <div className="chessboard">
+        <div className={`chessboard ${boardState}`}>
             {Array.from({ length: 8 }, (_, row) => {
                 // White on bottom: ranks start from 1-8, bottom-to-top
                 let rank = 8 - row;

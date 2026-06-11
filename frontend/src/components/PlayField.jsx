@@ -1,17 +1,29 @@
 import ChessBoard from "./board/ChessBoard.jsx";
 import Coordinate from "./board/Coordinate.jsx";
-import { startingposition } from "../utils/startingPosition.js";
 import Piece from "./board/Piece.jsx";
+import { startingPosition } from "../utils/startingPosition.js";
+import { useState } from "react";
+import { FlippedContext } from "../contexts/FlippedContext.js";
+
+
 function PlayField() {
-    return (<div className="playfield">
-        <ChessBoard key={"chessboard"}></ChessBoard>
-        <Coordinate key={"coordinate-rank"} axis={"rank"}></Coordinate>
-        <Coordinate key={"coordinate-file"} axis={"file"}></Coordinate>
-        <div className="pieces-layer">
-            {startingposition.map(([type, file, rank]) => {
-                return (<Piece type={type} rank={rank} file={file} ></Piece>)
-            })}
-        </div>
-    </div >)
+    const [isFlipped, setIsFlipped] = useState(false);
+
+    return (
+        <FlippedContext value={isFlipped}>
+            <div className="playfield">
+                <ChessBoard key={"chessboard"} />
+                <Coordinate key={"coordinate-rank"} axis={"rank"} />
+                <Coordinate key={"coordinate-file"} axis={"file"} />
+
+                <div className="pieces-layer">
+                    {startingPosition.map(([type, file, rank]) => {
+                        return (<Piece type={type} rank={rank} file={file} ></Piece>)
+                    })}
+                </div>
+            </div >
+            <button style={{ zIndex: 10 }} onClick={() => setIsFlipped(!isFlipped)}>Flip</button>
+        </FlippedContext>
+    )
 }
 export default PlayField;
