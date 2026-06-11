@@ -1,8 +1,8 @@
 .playfield {
     position: relative;
-    width: 100%;
     width: 90vmin;
     max-width: 600px;
+    min-width: 256px;
     aspect-ratio: 1 / 1;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
@@ -15,10 +15,7 @@
     width: 100%;
     min-width: 256px;
     min-height: 256px;
-    max-width: 600px;
     aspect-ratio: 1 / 1;
-    box-sizing: border-box;
-    border: 4px solid #333;
     z-index: 1;
 }
 
@@ -33,6 +30,8 @@
 .square {
     width: 100%;
     height: 100%;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .square.light {
@@ -47,10 +46,9 @@
     position: absolute;
     display: flex;
     pointer-events: none;
-    z-index: 10;
     font-family: sans-serif;
     font-weight: bold;
-    font-size: 0.7em;
+    font-size: clamp(0.6rem, 2.5vw, 0.85rem);
     z-index: 2;
 }
 
@@ -58,20 +56,23 @@
     white-space: nowrap;
     flex-shrink: 0;
     user-select: none;
-}
-
-.coordinate.dark {
-    color: #4b7399;
+    font-family: sans-serif;
+    font-weight: bold;
 }
 
 .coordinate.light {
     color: #eae9d2;
 }
 
+.coordinate.dark {
+    color: #4b7399;
+}
+
 .coordinate-container.file {
-    bottom: 4px;
-    left: 1px;
+    bottom: 2px;
+    left: 0;
     width: 100%;
+    height: 12.5%;
     flex-direction: row;
     min-width: 256px;
 }
@@ -82,17 +83,16 @@
     align-items: flex-end;
     justify-content: flex-end;
     padding-right: 4px;
+    padding-bottom: 2px;
 }
 
 .coordinate-container.rank {
-    box-sizing: border-box;
     top: 0;
     left: 4px;
+    width: 12.5%;
     height: 100%;
-    min-height: 256px;
     flex-direction: column;
-    margin-top: 0.1em;
-    margin-left: 0.1em;
+    min-height: 256px;
 }
 
 .coordinate-container.rank .coordinate {
@@ -100,17 +100,18 @@
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
+    padding-top: 4px;
 }
 
 .pieces-layer {
     position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-width: 256px;
+    min-height: 256px;
     z-index: 5;
-    top: 4px;
-    left: 4px;
-    width: calc(100% - 8px);
-    height: calc(100% - 8px);
-    min-width: calc(256px - 8px);
-    min-height: calc(256px - 8px);
     pointer-events: none;
 }
 
@@ -118,9 +119,6 @@
     width: 12.5%;
     height: 12.5%;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     user-select: none;
 }
 

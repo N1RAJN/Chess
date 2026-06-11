@@ -22,7 +22,7 @@ function PlayField() {
                     })}
                 </div>
             </div >
-            <button style={{ zIndex: 10 }} onClick={() => setIsFlipped(!isFlipped)}>Flip</button>
+            <button onClick={() => { setIsFlipped(!isFlipped) }}>flip</button>
         </FlippedContext>
     )
 }
