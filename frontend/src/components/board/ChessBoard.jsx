@@ -11,11 +11,9 @@ function ChessBoard() {
             {Array.from({ length: 8 }, (_, row) => {
                 // White on bottom: ranks start from 1-8, bottom-to-top
                 let rank = 8 - row;
-                return <div key={`rank-${rank + 1}`} id={`rank-${rank + 1}`} className="rank">
+                return <div key={`rank-${rank}`} id={`rank-${rank}`} className="rank">
                     {Array.from({ length: 8 }, (_, column) => {
-                        // column starts from 0
-                        // ASCII of 'a' = 97
-                        let file = String.fromCharCode(column + 97);
+                        let file = column + 1;
 
                         // Eyeballed it and works somehow
                         let color = (row + column) % 2 ? "dark" : "light";

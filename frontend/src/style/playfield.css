@@ -120,6 +120,8 @@
     height: 12.5%;
     position: relative;
     user-select: none;
+    pointer-events: auto;
+    cursor: grab;
 }
 
 .piece img,

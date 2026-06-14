@@ -8,7 +8,7 @@ function Piece({ type, rank, file }) {
     let column = isFlipped ? 8 - file : file - 1;
 
     const style = { position: 'absolute', top: `${row * 12.5}%`, left: `${column * 12.5}%` }
-    return (<div className="piece" style={style}>
+    return (<div id={`${type}-${file}${rank}`} className="piece" style={style}>
         <img src={pieceSVG[type]} />
     </div>)
 }
