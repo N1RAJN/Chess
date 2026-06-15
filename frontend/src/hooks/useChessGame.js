@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { initBoard } from "../utils/chessEngine";
+import { initBoard, getLegalMoves } from "../utils/chessEngine";
 
 export function useChessGame() {
     const [board, setBoard] = useState(initBoard());
@@ -9,11 +9,14 @@ export function useChessGame() {
     const handleClick = (rank, file) => {
         const row = rank - 1;
         const col = file - 1;
+        const piece = board[row][col];
         if (selectedSquare) {
+            let [sR, sC] = selectedSquare;
+            if (piece?.colour == board[sR][sC].colour) setSelectedSquare(null);
         } else {
-            const piece = board[row][col];
             if (piece) {
                 setSelectedSquare([row, col]);
+                console.log(getLegalMoves(board, row, col));
             }
         }
     };
