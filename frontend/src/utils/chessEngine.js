@@ -43,8 +43,7 @@ export function initBoard() {
  * @param {number} col
  *  @returns {[number, number][]} moves
  * */
-function calculateMoves(direction, board, row, col) {
-    // FIXME: single depth for knight and king
+function calculateMoves(direction, board, row, col, limitDepth = false) {
     let moves = [];
     direction.forEach(([dr, dc]) => {
         let r = row + dr,
@@ -56,6 +55,7 @@ function calculateMoves(direction, board, row, col) {
                 break;
             }
             moves.push([r + 1, c + 1]);
+            if (limitDepth) break;
             c += dc;
             r += dr;
         }
@@ -88,11 +88,13 @@ export function getLegalMoves(board, row, col) {
             moves = moves.concat(calculateMoves(diagonal, board, row, col));
             break;
         case "N":
-            moves = calculateMoves(knightMoves, board, row, col);
+            moves = calculateMoves(knightMoves, board, row, col, true);
             break;
         case "K":
-            moves = calculateMoves(straight, board, row, col);
-            moves = moves.concat(calculateMoves(diagonal, board, row, col));
+            moves = calculateMoves(straight, board, row, col, true);
+            moves = moves.concat(
+                calculateMoves(diagonal, board, row, col, true),
+            );
             break;
         case "P":
             // 1 square up
