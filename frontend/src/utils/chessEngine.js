@@ -47,7 +47,7 @@ export function initBoard() {
 function calculatePawnMoves(board, row, col) {
     /**@type {ChessPiece}*/
     const pawn = board[row][col];
-    console.assert(pawn !== null, board, row, col, "Not a pawn");
+    if (pawn.type !== "P") throw new Error("Not a pawn");
 
     const initRow = pawn.colour === "w" ? 1 : 6;
 
@@ -139,6 +139,5 @@ export function getLegalMoves(board, row, col) {
 
     return calculateMoves(directions, board, row, col, limitDepth);
 }
-
 /**
  */

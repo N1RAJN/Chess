@@ -7,7 +7,8 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-.chessboard {
+.chessboard,
+.highlights-layer {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -19,7 +20,8 @@
     z-index: 1;
 }
 
-.chessboard.flipped {
+.chessboard.flipped,
+.highlights-layer.flipped {
     transform: rotate(180deg);
 }
 
@@ -42,6 +44,78 @@
     background-color: #4b7399;
 }
 
+.square.highlight-move,
+.square.highlight-capture,
+.square.highlight-last-move,
+.square.highlight-check {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    pointer-events: auto;
+    grid-row-start: calc(9 - var(--rank));
+    grid-column-start: calc(var(--file));
+}
+
+.square.highlight-move::after {
+    content: '';
+    width: 30%;
+    height: 30%;
+    background-color: rgba(0, 0, 0, 0.18);
+    border-radius: 50%;
+    transition: width 0.15s ease, height 0.15s ease, border-radius 0.15s ease, background-color 0.15s ease;
+    pointer-events: none;
+}
+
+.square.highlight-move:hover::after {
+    width: 100%;
+    height: 100%;
+    border-radius: 0%;
+    background-color: rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+}
+
+.square.highlight-capture::after {
+    content: '';
+    width: 85%;
+    height: 85%;
+    border: 5px solid rgba(0, 0, 0, 0.18);
+    border-radius: 50%;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease, border-radius 0.15s ease, border 0.15s ease;
+    pointer-events: none;
+}
+
+.square.highlight-capture:hover::after {
+    border: 0px solid transparent;
+    border-radius: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(235, 97, 80, 0.25);
+    cursor: pointer;
+}
+
+.square.highlight-last-move {
+    background-color: rgba(247, 247, 105, 0.4);
+}
+
+.square.highlight-check {
+    background: radial-gradient(circle,
+            rgba(255, 0, 0, 0.65) 0%,
+            rgba(231, 42, 42, 0.35) 50%,
+            rgba(0, 0, 0, 0) 70%);
+}
+
+.highlights-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    pointer-events: none;
+}
+
 .coordinate-container {
     position: absolute;
     display: flex;
@@ -49,7 +123,7 @@
     font-family: sans-serif;
     font-weight: bold;
     font-size: clamp(0.6rem, 2.5vw, 0.85rem);
-    z-index: 2;
+    z-index: 10;
 }
 
 .coordinate {
@@ -111,7 +185,7 @@
     height: 100%;
     min-width: 256px;
     min-height: 256px;
-    z-index: 5;
+    z-index: 20;
     pointer-events: none;
 }
 

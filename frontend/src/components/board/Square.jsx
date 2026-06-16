@@ -1,5 +1,16 @@
-function Square({ color, rank, file }) {
-    return (<div id={`square-${file}${rank}`} className={`square ${color}`}>
-    </div>)
+function Square({ color, rank, file, style, isLastMove = false, isCheck = false, isLegalMove = false, isCapture = false }) {
+    const baseClass = `square ${color}`;
+    const highlightClasses = [];
+    if (isLastMove) highlightClasses.push("highlight-last-move");
+    if (isLegalMove) highlightClasses.push("highlight-move");
+    if (isCheck) highlightClasses.push("highlight-check");
+    if (isCapture) highlightClasses.push("highlight-capture");
+
+    let finalClass = `${baseClass} ${highlightClasses.join(' ')}`.trim();
+    let id = `square-${file}${rank}`;
+    if (highlightClasses.length !== 0) id += " highlight";
+
+    return (<div id={id} className={finalClass} style={style} >
+    </div >)
 }
 export default Square;
