@@ -15,6 +15,7 @@ export function initBoard() {
             file: i + 1,
             rank: 8,
         };
+
         board[6][i] = {
             colour: "b",
             type: "P",
@@ -41,7 +42,7 @@ export function initBoard() {
  * @param {ChessBoardMatrix} board
  * @param {number} row
  * @param {number} col
- *  @returns {[number, number][]} moves
+ * @returns {[number, number][]} moves
  * */
 function calculateMoves(direction, board, row, col, limitDepth = false) {
     let moves = [];
@@ -75,26 +76,20 @@ export function getLegalMoves(board, row, col) {
     if (!piece) return [];
 
     /** @type {[[number, number]]} */
-    let moves = [];
+    let directions = [];
+    let limitDepth = false;
     switch (piece.type) {
         case "R":
-            moves = calculateMoves(straight, board, row, col);
+            directions = straight;
             break;
         case "B":
-            moves = calculateMoves(diagonal, board, row, col);
+            directions = diagonal;
             break;
-        case "Q":
-            moves = calculateMoves(straight, board, row, col);
-            moves = moves.concat(calculateMoves(diagonal, board, row, col));
+        case "Q" || "K":
+            directions = [...straight, ...diagonal];
             break;
         case "N":
-            moves = calculateMoves(knightMoves, board, row, col, true);
-            break;
-        case "K":
-            moves = calculateMoves(straight, board, row, col, true);
-            moves = moves.concat(
-                calculateMoves(diagonal, board, row, col, true),
-            );
+            directions = knightMoves;
             break;
         case "P":
             // 1 square up
@@ -105,8 +100,11 @@ export function getLegalMoves(board, row, col) {
             break;
         default:
             console.error("Unkown Piece Type", piece.type);
+            return;
     }
-    return moves;
+    if (piece.type === "N" || piece.type === "K") limitDepth = true;
+
+    return calculateMoves(directions, board, row, col, limitDepth);
 }
 
 /**
