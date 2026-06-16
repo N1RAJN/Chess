@@ -32,3 +32,5 @@ export const startingPosition = [
     ["wN", 7, 1],
     ["wR", 8, 1],
 ];
+
+export const startingFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";

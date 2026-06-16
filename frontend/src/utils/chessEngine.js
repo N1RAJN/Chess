@@ -1,4 +1,4 @@
-import { knightMoves, straight, diagonal } from "./moveDirections";
+import { knightMoves, pawnMoves, straight, diagonal } from "./moveDirections";
 // @ts-check
 /** @returns {ChessBoardMatrix} */
 export function initBoard() {
@@ -36,6 +36,43 @@ export function initBoard() {
         };
     }
     return board;
+}
+
+/**
+ * @param {ChessBoardMatrix} board
+ * @param {number} row
+ * @param {number} col
+ * @returns {[number, number][]} moves
+ * */
+function calculatePawnMoves(board, row, col) {
+    /**@type {ChessPiece}*/
+    const pawn = board[row][col];
+    console.assert(pawn !== null, board, row, col, "Not a pawn");
+
+    const initRow = pawn.colour === "w" ? 1 : 6;
+
+    const moves = [];
+    for (const moveType in pawnMoves) {
+        if (row !== initRow && moveType == "twoSquares") continue;
+
+        const [dr, dc] = pawnMoves[moveType];
+        const r = row + dr;
+        const c = col + dc;
+
+        if (r >= 8 || c >= 8 || r < 0 || c < 0) continue;
+        if (board[r][c] !== null) continue;
+
+        if (moveType === "leftCapture" || moveType === "rightCapture") {
+            if (board[r][c] !== null && board[r][c]?.colour !== pawn.colour)
+                moves.push([r + 1, c + 1]);
+            continue;
+        }
+        moves.push([r + 1, c + 1]);
+    }
+    return moves;
+    // FIXME: Handle these
+    // en-passsant
+    // promotions
 }
 
 /** @param {[number, number][]} direction
@@ -85,19 +122,15 @@ export function getLegalMoves(board, row, col) {
         case "B":
             directions = diagonal;
             break;
-        case "Q" || "K":
+        case "K":
+        case "Q":
             directions = [...straight, ...diagonal];
             break;
         case "N":
             directions = knightMoves;
             break;
         case "P":
-            // 1 square up
-            // 2 square up (if starting rank)
-            // diagonal captures
-            // en-passsant
-            // promotions
-            break;
+            return calculatePawnMoves(board, row, col);
         default:
             console.error("Unkown Piece Type", piece.type);
             return;

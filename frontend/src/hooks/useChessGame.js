@@ -12,11 +12,16 @@ export function useChessGame() {
         const piece = board[row][col];
         if (selectedSquare) {
             let [sR, sC] = selectedSquare;
-            if (piece?.colour == board[sR][sC].colour) setSelectedSquare(null);
+            if (piece?.colour == board[sR][sC].colour) {
+                setSelectedSquare([row, col]);
+                console.log(getLegalMoves(board, row, col));
+            }
         } else {
             if (piece) {
                 setSelectedSquare([row, col]);
                 console.log(getLegalMoves(board, row, col));
+            } else {
+                setSelectedSquare(null);
             }
         }
     };
