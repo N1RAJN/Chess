@@ -11,3 +11,7 @@
 /**
  * @typedef {(ChessPiece | null)[][]} ChessBoardMatrix
  * */
+
+/**
+ * @typedef {"move", "capture", "check", "lastMove", "selected"} Highlight
+ */

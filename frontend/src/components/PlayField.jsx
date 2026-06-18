@@ -33,9 +33,21 @@ function PlayField() {
                 processClick(e)
             }}>
                 <ChessBoard key={"chessboard"} />
-                <div className="highlights-layer">
-                    {/* TODO: Render the active highlights here */}
-                    <Square rank={3} file={3} isCheck={true} color={"black"} style={{ '--rank': 4, '--file': 8 }}></Square>
+                <div className={`highlights-layer ${isFlipped ? "flipped" : ""}`}>
+                    {selectedSquare && (<Square
+                        rank={selectedSquare[0]}
+                        file={selectedSquare[1]}
+                        isSelected={true}
+                        style={{ "--rank": selectedSquare[0], "--file": selectedSquare[1] }}
+                    />)}
+                    {activeHighlights.map(([rank, file, type]) => {
+                        return (<Square rank={rank}
+                            file={file}
+                            style={{ '--rank': rank, '--file': file }}
+                            isCapture={type === "capture" ? true : false}
+                            isLegalMove={type === "move" ? true : false} />)
+                    })}
+
                 </div>
                 <Coordinate key={"coordinate-rank"} axis={"rank"} />
                 <Coordinate key={"coordinate-file"} axis={"file"} />

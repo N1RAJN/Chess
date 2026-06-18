@@ -47,6 +47,7 @@
 .square.highlight-move,
 .square.highlight-capture,
 .square.highlight-last-move,
+.square.highlight-selected,
 .square.highlight-check {
     width: 100%;
     height: 100%;
@@ -67,14 +68,6 @@
     border-radius: 50%;
     transition: width 0.15s ease, height 0.15s ease, border-radius 0.15s ease, background-color 0.15s ease;
     pointer-events: none;
-}
-
-.square.highlight-move:hover::after {
-    width: 100%;
-    height: 100%;
-    border-radius: 0%;
-    background-color: rgba(255, 255, 255, 0.15);
-    cursor: pointer;
 }
 
 .square.highlight-capture::after {
@@ -106,6 +99,11 @@
             rgba(255, 0, 0, 0.65) 0%,
             rgba(231, 42, 42, 0.35) 50%,
             rgba(0, 0, 0, 0) 70%);
+}
+
+.square.highlight-selected {
+    background-color: rgba(50, 152, 255, 0.5);
+    pointer-events: auto;
 }
 
 .highlights-layer {

@@ -28,6 +28,7 @@ export function initBoard() {
             file: i + 1,
             rank: 2,
         };
+
         board[0][i] = {
             colour: "w",
             type: pieceArray[i],
@@ -42,7 +43,7 @@ export function initBoard() {
  * @param {ChessBoardMatrix} board
  * @param {number} row
  * @param {number} col
- * @returns {[number, number][]} moves
+ * @returns {[number, number, string][]} moves
  * */
 function calculatePawnMoves(board, row, col) {
     /**@type {ChessPiece}*/
@@ -56,18 +57,18 @@ function calculatePawnMoves(board, row, col) {
         if (row !== initRow && moveType == "twoSquares") continue;
 
         const [dr, dc] = pawnMoves[moveType];
-        const r = row + dr;
-        const c = col + dc;
+        const r = pawn.colour === "b" ? row - dr : row + dr;
+        const c = pawn.colour === "b" ? col - dc : col + dc;
 
         if (r >= 8 || c >= 8 || r < 0 || c < 0) continue;
         if (board[r][c] !== null) continue;
 
         if (moveType === "leftCapture" || moveType === "rightCapture") {
             if (board[r][c] !== null && board[r][c]?.colour !== pawn.colour)
-                moves.push([r + 1, c + 1]);
+                moves.push([r + 1, c + 1, "capture"]);
             continue;
         }
-        moves.push([r + 1, c + 1]);
+        moves.push([r + 1, c + 1, "move"]);
     }
     return moves;
     // FIXME: Handle these
@@ -79,7 +80,7 @@ function calculatePawnMoves(board, row, col) {
  * @param {ChessBoardMatrix} board
  * @param {number} row
  * @param {number} col
- * @returns {[number, number][]} moves
+ * @returns {[number, number, string][]} moves
  * */
 function calculateMoves(direction, board, row, col, limitDepth = false) {
     let moves = [];
@@ -89,10 +90,10 @@ function calculateMoves(direction, board, row, col, limitDepth = false) {
         while (r < 8 && c < 8 && r >= 0 && c >= 0) {
             if (board[r][c] !== null) {
                 if (board[r][c].colour !== board[row][col].colour)
-                    moves.push([r + 1, c + 1]);
+                    moves.push([r + 1, c + 1, "capture"]);
                 break;
             }
-            moves.push([r + 1, c + 1]);
+            moves.push([r + 1, c + 1, "move"]);
             if (limitDepth) break;
             c += dc;
             r += dr;
@@ -105,7 +106,7 @@ function calculateMoves(direction, board, row, col, limitDepth = false) {
  * @param {ChessBoardMatrix} board
  * @param {number} row
  * @param {number} col
- * @returns {[number, number][]}
+ * @returns {[number, number, string][]}
  * */
 export function getLegalMoves(board, row, col) {
     const piece = board[row][col];
