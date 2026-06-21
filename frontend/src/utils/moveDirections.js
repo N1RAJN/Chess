@@ -23,6 +23,6 @@ export const knightMoves = [
 export const pawnMoves = {
     oneSquare: [1, 0],
     twoSquares: [2, 0],
-    rightCapture: [1, -1],
+    rightCapture: [1, 1],
     leftCapture: [1, -1],
 };

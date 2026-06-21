@@ -22,7 +22,8 @@ export function useChessGame() {
             setActiveHighlights([]);
         } else if (piece && (!selected || piece.colour == selected.colour)) {
             setSelectedSquare([rank, file]);
-            setActiveHighlights(getLegalMoves(board, row, col));
+            const moves = getLegalMoves(board, row, col);
+            setActiveHighlights(moves);
         } else {
             const isLegal = activeHighlights.some(
                 ([r, c]) => r == rank && c == file,

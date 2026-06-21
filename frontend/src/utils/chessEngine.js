@@ -58,17 +58,19 @@ function calculatePawnMoves(board, row, col) {
 
     const moves = [];
     for (const moveType in pawnMoves) {
-        if (row !== initRow && moveType == "twoSquares") continue;
+        if (moveType == "twoSquares") {
+            const r = pawn.colour === "b" ? -1 : 1;
+            if (row !== initRow || board[row + r][col] !== null) continue;
+        }
 
         const [dr, dc] = pawnMoves[moveType];
         const r = pawn.colour === "b" ? row - dr : row + dr;
-        const c = pawn.colour === "b" ? col - dc : col + dc;
+        const c = pawn.colour === "b" ? col + dc : col + dc;
 
         if (r >= 8 || c >= 8 || r < 0 || c < 0) continue;
-        if (board[r][c] !== null) continue;
 
         if (moveType === "leftCapture" || moveType === "rightCapture") {
-            if (board[r][c] !== null && board[r][c]?.colour !== pawn.colour)
+            if (board[r][c] !== null && board[r][c].colour !== pawn.colour)
                 moves.push([r + 1, c + 1, "capture"]);
             continue;
         }
