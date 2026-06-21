@@ -2,7 +2,6 @@ import ChessBoard from "./board/ChessBoard.jsx";
 import Coordinate from "./board/Coordinate.jsx";
 import Piece from "./board/Piece.jsx";
 import Square from "./board/Square.jsx";
-import { startingPosition } from "../utils/startingPosition.js";
 import { useState } from "react";
 import { FlippedContext } from "../contexts/FlippedContext.js";
 import { useChessGame } from "../hooks/useChessGame.js";
@@ -35,13 +34,16 @@ function PlayField() {
                 <ChessBoard key={"chessboard"} />
                 <div className={`highlights-layer ${isFlipped ? "flipped" : ""}`}>
                     {selectedSquare && (<Square
+                        key={`highlight-${selectedSquare.join("-")}`}
                         rank={selectedSquare[0]}
                         file={selectedSquare[1]}
                         isSelected={true}
                         style={{ "--rank": selectedSquare[0], "--file": selectedSquare[1] }}
                     />)}
                     {activeHighlights.map(([rank, file, type]) => {
-                        return (<Square rank={rank}
+                        return (<Square
+                            key={`highlight-${type}-${file}-${rank}`}
+                            rank={rank}
                             file={file}
                             style={{ '--rank': rank, '--file': file }}
                             isCapture={type === "capture" ? true : false}
@@ -53,9 +55,19 @@ function PlayField() {
                 <Coordinate key={"coordinate-file"} axis={"file"} />
 
                 <div className="pieces-layer">
-                    {startingPosition.map(([type, file, rank]) => {
-                        return (<Piece type={type} rank={rank} file={file} ></Piece>)
-                    })}
+                    {board.map((row, _) =>
+                        row.map((piece, _) => {
+                            if (!piece) return null;
+                            return (<Piece
+                                key={piece.id}
+                                colour={piece.colour}
+                                type={piece.type}
+                                rank={piece.rank}
+                                file={piece.file}
+                                style={{ '--rank': piece.rank, '--file': piece.file }}
+                            ></Piece>)
+                        })
+                    )}
                 </div>
             </div >
             <button onClick={() => { setIsFlipped(!isFlipped) }}>flip</button>

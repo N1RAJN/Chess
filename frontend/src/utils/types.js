@@ -2,6 +2,7 @@
 
 /**
  * @typedef {Object} ChessPiece
+ * @property {string} id 
  * @property {'w' | 'b'} colour
  * @property {PieceType} type
  * @property {number} file

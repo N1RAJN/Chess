@@ -10,6 +10,7 @@ export function initBoard() {
     const pieceArray = ["R", "N", "B", "Q", "K", "B", "N", "R"];
     for (let i = 0; i < 8; ++i) {
         board[7][i] = {
+            id: `b${pieceArray[i]}${i}`,
             colour: "b",
             type: pieceArray[i],
             file: i + 1,
@@ -17,12 +18,14 @@ export function initBoard() {
         };
 
         board[6][i] = {
+            id: `bP${i}`,
             colour: "b",
             type: "P",
             file: i + 1,
             rank: 7,
         };
         board[1][i] = {
+            id: `wP${i}`,
             colour: "w",
             type: "P",
             file: i + 1,
@@ -30,6 +33,7 @@ export function initBoard() {
         };
 
         board[0][i] = {
+            id: `w${pieceArray[i]}${i}`,
             colour: "w",
             type: pieceArray[i],
             file: i + 1,
@@ -83,6 +87,9 @@ function calculatePawnMoves(board, row, col) {
  * @returns {[number, number, string][]} moves
  * */
 function calculateMoves(direction, board, row, col, limitDepth = false) {
+    // FIXME:
+    // 1. Pinned pieces
+    // 2. Kings not being able to move to an attacked square.
     let moves = [];
     direction.forEach(([dr, dc]) => {
         let r = row + dr,
