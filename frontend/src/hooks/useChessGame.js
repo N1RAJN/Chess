@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { initBoard, getLegalMoves } from "../utils/chessEngine";
+import {
+    initBoard,
+    getLegalMoves,
+    makeMovesOnBoardMatrix,
+} from "../utils/chessEngine";
 
 export function useChessGame() {
     const [board, setBoard] = useState(initBoard());
@@ -20,8 +24,23 @@ export function useChessGame() {
             setSelectedSquare([rank, file]);
             setActiveHighlights(getLegalMoves(board, row, col));
         } else {
-            setSelectedSquare(null);
-            setActiveHighlights([]);
+            const isLegal = activeHighlights.some(
+                ([r, c]) => r == rank && c == file,
+            );
+
+            if (isLegal) {
+                const [fromRank, fromFile] = selectedSquare;
+                const newBoard = makeMovesOnBoardMatrix(
+                    board,
+                    fromRank - 1,
+                    fromFile - 1,
+                    row,
+                    col,
+                );
+                setBoard(newBoard);
+                setSelectedSquare(null);
+                setActiveHighlights([]);
+            }
         }
     };
     return [board, selectedSquare, activeHighlights, handleClick];

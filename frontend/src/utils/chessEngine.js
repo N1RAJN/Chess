@@ -148,4 +148,26 @@ export function getLegalMoves(board, row, col) {
     return calculateMoves(directions, board, row, col, limitDepth);
 }
 /**
+ * @param {ChessBoardMatrix} board
+ * @param {number} fromCol
+ * @param {number} fromRow
+ * @param {number} toCol
+ * @param {number} toRow
+ * @returns {ChessBoardMatrix}
  */
+export function makeMovesOnBoardMatrix(board, fromRow, fromCol, toRow, toCol) {
+    const newBoard = board.map((row) => [...row]);
+
+    const originalPiece = newBoard[fromRow][fromCol];
+    if (!originalPiece) return newBoard;
+    const updatedPiece = {
+        ...originalPiece,
+        rank: toRow + 1,
+        file: toCol + 1,
+    };
+
+    newBoard[fromRow][fromCol] = null;
+    newBoard[toRow][toCol] = updatedPiece;
+
+    return newBoard;
+}
