@@ -1,4 +1,4 @@
-import { knightMoves, pawnMoves, straight, diagonal } from "./moveDirections";
+import { knightMoves, straight, diagonal } from "./moveDirections";
 // @ts-check
 /** @returns {ChessBoardMatrix} */
 export function initBoard() {
@@ -42,6 +42,13 @@ export function initBoard() {
     }
     return board;
 }
+/** @param {number} r
+/** @param {number} c
+ ** @return {boolean}
+ */
+function inBounds(r, c) {
+    return r < 8 && c < 8 && r >= 0 && c >= 0;
+}
 
 /**
  * @param {ChessBoardMatrix} board
@@ -55,26 +62,26 @@ function calculatePawnMoves(board, row, col) {
     if (pawn.type !== "P") throw new Error("Not a pawn");
 
     const initRow = pawn.colour === "w" ? 1 : 6;
-
+    const dr = pawn.colour === "b" ? -1 : 1;
     const moves = [];
-    for (const moveType in pawnMoves) {
-        if (moveType == "twoSquares") {
-            const r = pawn.colour === "b" ? -1 : 1;
-            if (row !== initRow || board[row + r][col] !== null) continue;
-        }
 
-        const [dr, dc] = pawnMoves[moveType];
-        const r = pawn.colour === "b" ? row - dr : row + dr;
-        const c = pawn.colour === "b" ? col + dc : col + dc;
+    const oneStep = row + dr;
+    if (inBounds(oneStep, col) && board[oneStep][col] === null) {
+        moves.push([oneStep + 1, col + 1, "move"]);
+        const twoStep = row + dr * 2;
+        if (row === initRow && board[oneStep][col] === null)
+            moves.push([twoStep + 1, col + 1, "move"]);
+    }
 
-        if (r >= 8 || c >= 8 || r < 0 || c < 0) continue;
-
-        if (moveType === "leftCapture" || moveType === "rightCapture") {
-            if (board[r][c] !== null && board[r][c].colour !== pawn.colour)
-                moves.push([r + 1, c + 1, "capture"]);
-            continue;
-        }
-        moves.push([r + 1, c + 1, "move"]);
+    for (const dc of [-1, 1]) {
+        const r = row + dr;
+        const c = col + dc;
+        if (
+            inBounds(r, c) &&
+            board[r][c] !== null &&
+            board[r][c].colour !== pawn.colour
+        )
+            moves.push([r + 1, c + 1, "capture"]);
     }
     return moves;
     // FIXME: Handle these
