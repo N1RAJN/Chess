@@ -11,7 +11,7 @@ function Coordinate({ axis }) {
                 const rank = isFlipped ? index + 1 : 8 - index;
                 const file = isFlipped ? (7 - index) + 97 : index + 97;
                 let coords = axis == "file" ? String.fromCharCode(file) : rank;
-                return (<div className={`coordinate ${color}`}>
+                return (<div key={`${coords}`} className={`coordinate ${color}`}>
                     {coords}
                 </div>)
             })}
