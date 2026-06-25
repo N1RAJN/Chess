@@ -79,9 +79,11 @@ function calculatePawnMoves(board, row, col) {
         if (
             inBounds(r, c) &&
             board[r][c] !== null &&
-            board[r][c].colour !== pawn.colour
-        )
+            board[r][c].colour !== pawn.colour &&
+            board[r][c].type !== "K"
+        ) {
             moves.push([r + 1, c + 1, "capture"]);
+        }
     }
     return moves;
     // FIXME: Handle these
@@ -99,14 +101,20 @@ function calculateMoves(direction, board, row, col, limitDepth = false) {
     // FIXME:
     // 1. Pinned pieces
     // 2. Kings not being able to move to an attacked square.
+    // 3. When in check, the king HAS to get out of check
     let moves = [];
     direction.forEach(([dr, dc]) => {
         let r = row + dr,
             c = col + dc;
-        while (r < 8 && c < 8 && r >= 0 && c >= 0) {
+        while (inBounds(r, c)) {
             if (board[r][c] !== null) {
-                if (board[r][c].colour !== board[row][col].colour)
+                if (
+                    board[r][c].colour !== board[row][col].colour &&
+                    board[r][c].type !== "K"
+                ) {
                     moves.push([r + 1, c + 1, "capture"]);
+                }
+
                 break;
             }
             moves.push([r + 1, c + 1, "move"]);
@@ -179,4 +187,63 @@ export function makeMovesOnBoardMatrix(board, fromRow, fromCol, toRow, toCol) {
     newBoard[toRow][toCol] = updatedPiece;
 
     return newBoard;
+}
+
+/**
+ * @param {ChessBoardMatrix} board
+ * @param {'w' | 'b'} colour
+ * @returns {boolean}
+ */
+export function isInCheck(board, [rank, file]) {
+    const row = rank - 1;
+    const col = file - 1;
+    const king = board[row][col];
+    if (king === null || king.type !== "K") throw new Error("Not king");
+    const colour = king.colour;
+
+    let checked = false;
+    const dr = colour === "b" ? -1 : 1;
+    for (const dc of [-1, 1]) {
+        const r = row + dr,
+            c = col + dc;
+        if (
+            inBounds(r, c) &&
+            board[r][c]?.colour !== colour &&
+            board[r][c]?.type === "P"
+        )
+            return true;
+    }
+    const sliding = [
+        { dirs: straight, types: new Set(["R", "Q"]) },
+        { dirs: diagonal, types: new Set(["B", "Q"]) },
+    ];
+    for (const { dirs, types } of sliding) {
+        for (const [dr, dc] of dirs) {
+            let r = row + dr,
+                c = col + dc;
+            while (inBounds(r, c)) {
+                const piece = board[r][c];
+                if (piece !== null) {
+                    if (piece.colour !== colour && types.has(piece.type))
+                        return true;
+                    break;
+                }
+                c += dc;
+                r += dr;
+            }
+        }
+    }
+
+    for (const [dr, dc] of knightMoves) {
+        const r = row + dr,
+            c = col + dc;
+        if (
+            inBounds(r, c) &&
+            board[r][c]?.colour !== colour &&
+            board[r][c]?.type === "N"
+        )
+            return true;
+    }
+
+    return false;
 }

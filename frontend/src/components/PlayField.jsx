@@ -9,12 +9,12 @@ import { useChessGame } from "../hooks/useChessGame.js";
 // NOTE: Square (and piece) coordinates are marked as file-rank (colum-row)
 // Range: [1, 8]
 
-// NOTE: Whereas, board state 2D-array uses row-column
+// NOTE: Whereas, board state (2D-array) uses row-column
 // Range: [0, 7]
 
 function PlayField() {
     const [isFlipped, setIsFlipped] = useState(false);
-    const [board, selectedSquare, activeHighlights, handleClick] = useChessGame();
+    const [board, checkedSquare, selectedSquare, activeHighlights, handleClick] = useChessGame();
 
     function processClick(e) { // Find the square coords
         e.preventDefault();
@@ -33,6 +33,13 @@ function PlayField() {
             }}>
                 <ChessBoard key={"chessboard"} />
                 <div className={`highlights-layer ${isFlipped ? "flipped" : ""}`}>
+                    {checkedSquare && (<Square
+                        key={`highlight-${checkedSquare.join("-")}`}
+                        rank={checkedSquare[0]}
+                        file={checkedSquare[1]}
+                        isCheck={true}
+                        style={{ "--rank": checkedSquare[0], "--file": checkedSquare[1] }}
+                    />)}
                     {selectedSquare && (<Square
                         key={`highlight-${selectedSquare.join("-")}`}
                         rank={selectedSquare[0]}
@@ -40,13 +47,14 @@ function PlayField() {
                         isSelected={true}
                         style={{ "--rank": selectedSquare[0], "--file": selectedSquare[1] }}
                     />)}
-                    {activeHighlights.map(([rank, file, type]) => {
+                    {activeHighlights?.map(([rank, file, type]) => {
                         return (<Square
                             key={`highlight-${type}-${file}-${rank}`}
                             rank={rank}
                             file={file}
                             style={{ '--rank': rank, '--file': file }}
                             isCapture={type === "capture" ? true : false}
+                            isCheck={type === "check" ? true : false}
                             isLegalMove={type === "move" ? true : false} />)
                     })}
 

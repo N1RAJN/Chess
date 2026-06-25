@@ -1,12 +1,17 @@
 import { useState } from "react";
+import { useRef } from "react";
 import {
     initBoard,
     getLegalMoves,
     makeMovesOnBoardMatrix,
+    isInCheck,
 } from "../utils/chessEngine";
 
 export function useChessGame() {
+    const whiteKing = useRef([1, 5]); // Rank, file
+    const blackKing = useRef([8, 5]);
     const [board, setBoard] = useState(initBoard());
+    const [checkedSquare, setCheckedSquare] = useState(null);
     const [selectedSquare, setSelectedSquare] = useState(null);
     const [activeHighlights, setActiveHighlights] = useState([]);
 
@@ -38,11 +43,30 @@ export function useChessGame() {
                     row,
                     col,
                 );
+                const coords =
+                    selected.colour === "b"
+                        ? whiteKing.current
+                        : blackKing.current;
+                if (selected.type === "K") {
+                    if (selected.colour === "w")
+                        whiteKing.current = [rank, file];
+                    else blackKing.current = [rank, file];
+                } else {
+                    if (isInCheck(newBoard, coords)) {
+                        setCheckedSquare(coords);
+                    }
+                }
                 setBoard(newBoard);
                 setSelectedSquare(null);
                 setActiveHighlights([]);
             }
         }
     };
-    return [board, selectedSquare, activeHighlights, handleClick];
+    return [
+        board,
+        checkedSquare,
+        selectedSquare,
+        activeHighlights,
+        handleClick,
+    ];
 }
