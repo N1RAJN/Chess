@@ -11,6 +11,7 @@ export function useChessGame() {
     const whiteKing = useRef([1, 5]); // Rank, file
     const blackKing = useRef([8, 5]);
     const [board, setBoard] = useState(initBoard());
+    const [isWhiteToMove, setIsWhiteToMove] = useState(true);
     const [checkedSquare, setCheckedSquare] = useState(null);
     const [selectedSquare, setSelectedSquare] = useState(null);
     const [activeHighlights, setActiveHighlights] = useState([]);
@@ -22,48 +23,60 @@ export function useChessGame() {
         const selected = selectedSquare
             ? board[selectedSquare[0] - 1][selectedSquare[1] - 1]
             : null;
+
+        // Unselect by clicking selected piece
         if (selected && piece === selected) {
             setSelectedSquare(null);
             setActiveHighlights([]);
-        } else if (piece && (!selected || piece.colour == selected.colour)) {
+        }
+        // Select a piece
+        else if (piece && (!selected || piece.colour == selected.colour)) {
+            // Turn checking
+            if (!isWhiteToMove ^ (piece.colour === "b")) return;
+
             setSelectedSquare([rank, file]);
             const moves = getLegalMoves(board, row, col);
             setActiveHighlights(moves);
-        } else {
+        }
+        // Move a selected piece
+        else {
             const isLegal = activeHighlights.some(
                 ([r, c]) => r == rank && c == file,
             );
 
-            if (isLegal) {
-                const [fromRank, fromFile] = selectedSquare;
-                const newBoard = makeMovesOnBoardMatrix(
-                    board,
-                    fromRank - 1,
-                    fromFile - 1,
-                    row,
-                    col,
-                );
-                const coords =
-                    selected.colour === "b"
-                        ? whiteKing.current
-                        : blackKing.current;
-                if (selected.type === "K") {
-                    if (selected.colour === "w")
-                        whiteKing.current = [rank, file];
-                    else blackKing.current = [rank, file];
-                } else {
-                    if (isInCheck(newBoard, coords)) {
-                        setCheckedSquare(coords);
-                    }
-                }
-                setBoard(newBoard);
-                setSelectedSquare(null);
-                setActiveHighlights([]);
+            if (!isLegal) return;
+
+            // Clicked one of the highlighted square
+            const [fromRank, fromFile] = selectedSquare;
+            const newBoard = makeMovesOnBoardMatrix(
+                board,
+                fromRank - 1,
+                fromFile - 1,
+                row,
+                col,
+            );
+            const coords =
+                selected.colour === "b" ? whiteKing.current : blackKing.current;
+            // Update coords if king
+            if (selected.type === "K") {
+                if (selected.colour === "w") whiteKing.current = [rank, file];
+                else blackKing.current = [rank, file];
             }
+            // Check if move resulted in check
+            else {
+                if (isInCheck(newBoard, coords)) {
+                    setCheckedSquare(coords);
+                }
+            }
+            setIsWhiteToMove(!isWhiteToMove);
+            setBoard(newBoard);
+            setSelectedSquare(null);
+            setActiveHighlights([]);
         }
     };
     return [
         board,
+        isWhiteToMove,
         checkedSquare,
         selectedSquare,
         activeHighlights,
