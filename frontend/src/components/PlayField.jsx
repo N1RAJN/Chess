@@ -14,7 +14,7 @@ import { useChessGame } from "../hooks/useChessGame.js";
 
 function PlayField() {
     const [isFlipped, setIsFlipped] = useState(false);
-    const [board, checkedSquare, selectedSquare, activeHighlights, handleClick] = useChessGame();
+    const [board, isWhiteToMove, checkedSquare, selectedSquare, activeHighlights, handleClick] = useChessGame();
 
     function processClick(e) { // Find the square coords
         e.preventDefault();
@@ -34,14 +34,14 @@ function PlayField() {
                 <ChessBoard key={"chessboard"} />
                 <div className={`highlights-layer ${isFlipped ? "flipped" : ""}`}>
                     {checkedSquare && (<Square
-                        key={`highlight-${checkedSquare.join("-")}`}
+                        key={`highlight-checked-${checkedSquare.join("-")}`}
                         rank={checkedSquare[0]}
                         file={checkedSquare[1]}
                         isCheck={true}
                         style={{ "--rank": checkedSquare[0], "--file": checkedSquare[1] }}
                     />)}
                     {selectedSquare && (<Square
-                        key={`highlight-${selectedSquare.join("-")}`}
+                        key={`highlight-selected-${selectedSquare.join("-")}`}
                         rank={selectedSquare[0]}
                         file={selectedSquare[1]}
                         isSelected={true}

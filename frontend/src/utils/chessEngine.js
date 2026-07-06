@@ -98,10 +98,6 @@ function calculatePawnMoves(board, row, col) {
  * @returns {[number, number, string][]} moves
  * */
 function calculateMoves(direction, board, row, col, limitDepth = false) {
-    // FIXME:
-    // 1. Pinned pieces
-    // 2. Kings not being able to move to an attacked square.
-    // 3. When in check, the king HAS to get out of check
     let moves = [];
     direction.forEach(([dr, dc]) => {
         let r = row + dr,
@@ -201,7 +197,6 @@ export function isInCheck(board, [rank, file]) {
     if (king === null || king.type !== "K") throw new Error("Not king");
     const colour = king.colour;
 
-    let checked = false;
     const dr = colour === "b" ? -1 : 1;
     for (const dc of [-1, 1]) {
         const r = row + dr,

@@ -36,6 +36,7 @@ export function useChessGame() {
 
             setSelectedSquare([rank, file]);
             const moves = getLegalMoves(board, row, col);
+            // FIX: Perhaps not even show moves that don't evade checks
             setActiveHighlights(moves);
         }
         // Move a selected piece
@@ -55,19 +56,31 @@ export function useChessGame() {
                 row,
                 col,
             );
-            const coords =
-                selected.colour === "b" ? whiteKing.current : blackKing.current;
+            const opposingKingCoord = isWhiteToMove
+                ? blackKing.current
+                : whiteKing.current;
+            let ownKingCoord =
+                selected.type === "K"
+                    ? [rank, file]
+                    : isWhiteToMove
+                      ? whiteKing.current
+                      : blackKing.current;
+
+            // Does move result in own king in check ?
+            if (isInCheck(newBoard, ownKingCoord)) return;
+
             // Update coords if king
             if (selected.type === "K") {
-                if (selected.colour === "w") whiteKing.current = [rank, file];
+                if (isWhiteToMove) whiteKing.current = [rank, file];
                 else blackKing.current = [rank, file];
             }
             // Check if move resulted in check
-            else {
-                if (isInCheck(newBoard, coords)) {
-                    setCheckedSquare(coords);
-                }
+            if (isInCheck(newBoard, opposingKingCoord)) {
+                setCheckedSquare(opposingKingCoord);
+            } else {
+                setCheckedSquare(null);
             }
+
             setIsWhiteToMove(!isWhiteToMove);
             setBoard(newBoard);
             setSelectedSquare(null);
