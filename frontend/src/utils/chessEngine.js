@@ -128,7 +128,9 @@ function calculateMoves(direction, board, row, col, limitDepth = false) {
  * @param {number} col
  * @returns {[number, number, string][]}
  * */
-export function getLegalMoves(board, row, col) {
+export function getLegalMoves(board, rank, file) {
+    const row = rank - 1;
+    const col = file - 1;
     const piece = board[row][col];
 
     if (!piece) return [];
@@ -168,7 +170,17 @@ export function getLegalMoves(board, row, col) {
  * @param {number} toRow
  * @returns {ChessBoardMatrix}
  */
-export function makeMovesOnBoardMatrix(board, fromRow, fromCol, toRow, toCol) {
+export function makeMovesOnBoardMatrix(
+    board,
+    fromRank,
+    fromFile,
+    toRank,
+    toFile,
+) {
+    const fromRow = fromRank - 1,
+        fromCol = fromFile - 1,
+        toRow = toRank - 1,
+        toCol = toFile - 1;
     const newBoard = board.map((row) => [...row]);
 
     const originalPiece = newBoard[fromRow][fromCol];
@@ -191,12 +203,15 @@ export function makeMovesOnBoardMatrix(board, fromRow, fromCol, toRow, toCol) {
  * @returns {boolean}
  */
 export function isInCheck(board, [rank, file]) {
+    // DFS from coords of king in question and find if opposing piece in any valid direction
     const row = rank - 1;
     const col = file - 1;
+    console.log(row, col);
     const king = board[row][col];
     if (king === null || king.type !== "K") throw new Error("Not king");
     const colour = king.colour;
 
+    // Pawn
     const dr = colour === "b" ? -1 : 1;
     for (const dc of [-1, 1]) {
         const r = row + dr,
@@ -208,6 +223,7 @@ export function isInCheck(board, [rank, file]) {
         )
             return true;
     }
+    // Queen, Rook, Bishops
     const sliding = [
         { dirs: straight, types: new Set(["R", "Q"]) },
         { dirs: diagonal, types: new Set(["B", "Q"]) },
@@ -229,6 +245,7 @@ export function isInCheck(board, [rank, file]) {
         }
     }
 
+    // Knight
     for (const [dr, dc] of knightMoves) {
         const r = row + dr,
             c = col + dc;

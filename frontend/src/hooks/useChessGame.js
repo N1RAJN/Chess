@@ -17,8 +17,8 @@ export function useChessGame() {
     const [activeHighlights, setActiveHighlights] = useState([]);
 
     const handleClick = (rank, file) => {
-        const row = rank - 1;
-        const col = file - 1;
+        const row = +rank - 1;
+        const col = +file - 1;
         const piece = board[row][col];
         const selected = selectedSquare
             ? board[selectedSquare[0] - 1][selectedSquare[1] - 1]
@@ -35,9 +35,30 @@ export function useChessGame() {
             if (!isWhiteToMove ^ (piece.colour === "b")) return;
 
             setSelectedSquare([rank, file]);
-            const moves = getLegalMoves(board, row, col);
+            const moves = getLegalMoves(board, rank, file);
+            let legals = [];
+            let oldKingCoord = isWhiteToMove
+                ? whiteKing.current
+                : blackKing.current;
+
             // FIX: Perhaps not even show moves that don't evade checks
-            setActiveHighlights(moves);
+            for (const [fromR, fromC, type] of moves) {
+                const newboard = makeMovesOnBoardMatrix(
+                    board,
+                    rank,
+                    file,
+                    fromR,
+                    fromC,
+                );
+
+                const ownKingCoord =
+                    piece.type === "K" ? [fromR, fromC] : oldKingCoord;
+
+                if (!isInCheck(newboard, ownKingCoord)) {
+                    legals.push([fromR, fromC, type]);
+                }
+            }
+            setActiveHighlights(legals);
         }
         // Move a selected piece
         else {
@@ -51,10 +72,10 @@ export function useChessGame() {
             const [fromRank, fromFile] = selectedSquare;
             const newBoard = makeMovesOnBoardMatrix(
                 board,
-                fromRank - 1,
-                fromFile - 1,
-                row,
-                col,
+                fromRank,
+                fromFile,
+                rank,
+                file,
             );
             const opposingKingCoord = isWhiteToMove
                 ? blackKing.current
