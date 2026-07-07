@@ -231,17 +231,21 @@ export function isInCheck(board, [rank, file]) {
     if (king === null || king.type !== "K") throw new Error("Not king");
     const colour = king.colour;
 
-    // Pawn
-    const dr = colour === "b" ? -1 : 1;
-    for (const dc of [-1, 1]) {
+    const opPawnDir = colour === "b" ? -1 : 1;
+    // Pawn, King
+    for (const [dr, dc] of [...straight, ...diagonal]) {
         const r = row + dr,
             c = col + dc;
-        if (
-            inBounds(r, c) &&
-            board[r][c]?.colour !== colour &&
-            board[r][c]?.type === "P"
-        )
+        if (!inBounds(r, c)) continue;
+        const piece = board[r][c];
+        const pawnCheck =
+            dr === opPawnDir &&
+            (dc === 1 || dc === -1) &&
+            piece?.colour !== colour &&
+            piece?.type === "P";
+        if (piece?.type === "K" || pawnCheck) {
             return true;
+        }
     }
     // Queen, Rook, Bishops
     const sliding = [
