@@ -128,7 +128,7 @@ function calculateMoves(direction, board, row, col, limitDepth = false) {
  * @param {number} col
  * @returns {[number, number, string][]}
  * */
-export function getLegalMoves(board, rank, file) {
+export function getLegalMoves(board, rank, file, oldKingCoord) {
     const row = rank - 1;
     const col = file - 1;
     const piece = board[row][col];
@@ -153,14 +153,35 @@ export function getLegalMoves(board, rank, file) {
             directions = knightMoves;
             break;
         case "P":
-            return calculatePawnMoves(board, row, col);
+            break;
         default:
             console.error("Unkown Piece Type", piece.type);
             return;
     }
     if (piece.type === "N" || piece.type === "K") limitDepth = true;
 
-    return calculateMoves(directions, board, row, col, limitDepth);
+    const moves =
+        piece.type === "P"
+            ? calculatePawnMoves(board, row, col)
+            : calculateMoves(directions, board, row, col, limitDepth);
+    let legals = [];
+
+    // Simulation of each moves to check for checks
+    // FIXME: Cut down number of moves to simluate by
+    // using separate pinned piece logic
+    for (const [fromR, fromC, type] of moves) {
+        const newboard = makeMovesOnBoardMatrix(
+            board,
+            rank,
+            file,
+            fromR,
+            fromC,
+        );
+        const ownKingCoord = piece.type === "K" ? [fromR, fromC] : oldKingCoord;
+        if (!isInCheck(newboard, ownKingCoord))
+            legals.push([fromR, fromC, type]);
+    }
+    return legals;
 }
 /**
  * @param {ChessBoardMatrix} board
@@ -206,7 +227,6 @@ export function isInCheck(board, [rank, file]) {
     // DFS from coords of king in question and find if opposing piece in any valid direction
     const row = rank - 1;
     const col = file - 1;
-    console.log(row, col);
     const king = board[row][col];
     if (king === null || king.type !== "K") throw new Error("Not king");
     const colour = king.colour;

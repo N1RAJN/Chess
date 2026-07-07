@@ -35,30 +35,10 @@ export function useChessGame() {
             if (!isWhiteToMove ^ (piece.colour === "b")) return;
 
             setSelectedSquare([rank, file]);
-            const moves = getLegalMoves(board, rank, file);
-            let legals = [];
             let oldKingCoord = isWhiteToMove
                 ? whiteKing.current
                 : blackKing.current;
-
-            // FIX: Perhaps not even show moves that don't evade checks
-            for (const [fromR, fromC, type] of moves) {
-                const newboard = makeMovesOnBoardMatrix(
-                    board,
-                    rank,
-                    file,
-                    fromR,
-                    fromC,
-                );
-
-                const ownKingCoord =
-                    piece.type === "K" ? [fromR, fromC] : oldKingCoord;
-
-                if (!isInCheck(newboard, ownKingCoord)) {
-                    legals.push([fromR, fromC, type]);
-                }
-            }
-            setActiveHighlights(legals);
+            setActiveHighlights(getLegalMoves(board, rank, file, oldKingCoord));
         }
         // Move a selected piece
         else {
@@ -70,6 +50,7 @@ export function useChessGame() {
 
             // Clicked one of the highlighted square
             const [fromRank, fromFile] = selectedSquare;
+
             const newBoard = makeMovesOnBoardMatrix(
                 board,
                 fromRank,
@@ -80,21 +61,13 @@ export function useChessGame() {
             const opposingKingCoord = isWhiteToMove
                 ? blackKing.current
                 : whiteKing.current;
-            let ownKingCoord =
-                selected.type === "K"
-                    ? [rank, file]
-                    : isWhiteToMove
-                      ? whiteKing.current
-                      : blackKing.current;
-
-            // Does move result in own king in check ?
-            if (isInCheck(newBoard, ownKingCoord)) return;
 
             // Update coords if king
             if (selected.type === "K") {
                 if (isWhiteToMove) whiteKing.current = [rank, file];
                 else blackKing.current = [rank, file];
             }
+
             // Check if move resulted in check
             if (isInCheck(newBoard, opposingKingCoord)) {
                 setCheckedSquare(opposingKingCoord);
