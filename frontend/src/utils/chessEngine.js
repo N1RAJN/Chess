@@ -56,7 +56,7 @@ function inBounds(r, c) {
  * @param {number} col
  * @returns {[number, number, string][]} moves
  * */
-function calculatePawnMoves(board, row, col) {
+function calculatePawnMoves(board, row, col, enPassantSquare) {
     /**@type {ChessPiece}*/
     const pawn = board[row][col];
     if (pawn.type !== "P") throw new Error("Not a pawn");
@@ -69,18 +69,21 @@ function calculatePawnMoves(board, row, col) {
     if (inBounds(oneStep, col) && board[oneStep][col] === null) {
         moves.push([oneStep + 1, col + 1, "move"]);
         const twoStep = row + dr * 2;
-        if (row === initRow && board[oneStep][col] === null)
+        if (row === initRow && board[oneStep][col] === null) {
             moves.push([twoStep + 1, col + 1, "move"]);
+        }
     }
 
+    const [epRank, epFile] = enPassantSquare?.current;
     for (const dc of [-1, 1]) {
         const r = row + dr;
         const c = col + dc;
+        if (!inBounds(r, c)) return;
         if (
-            inBounds(r, c) &&
-            board[r][c] !== null &&
-            board[r][c].colour !== pawn.colour &&
-            board[r][c].type !== "K"
+            (board[r][c] !== null &&
+                board[r][c].colour !== pawn.colour &&
+                board[r][c].type !== "K") ||
+            (r === epRank - 1 && c === epFile - 1)
         ) {
             moves.push([r + 1, c + 1, "capture"]);
         }
@@ -110,7 +113,6 @@ function calculateMoves(direction, board, row, col, limitDepth = false) {
                 ) {
                     moves.push([r + 1, c + 1, "capture"]);
                 }
-
                 break;
             }
             moves.push([r + 1, c + 1, "move"]);
@@ -128,7 +130,13 @@ function calculateMoves(direction, board, row, col, limitDepth = false) {
  * @param {number} col
  * @returns {[number, number, string][]}
  * */
-export function getLegalMoves(board, rank, file, oldKingCoord) {
+export function getLegalMoves(
+    board,
+    rank,
+    file,
+    oldKingCoord,
+    enPassantSquare,
+) {
     const row = rank - 1;
     const col = file - 1;
     const piece = board[row][col];
@@ -162,7 +170,7 @@ export function getLegalMoves(board, rank, file, oldKingCoord) {
 
     const moves =
         piece.type === "P"
-            ? calculatePawnMoves(board, row, col)
+            ? calculatePawnMoves(board, row, col, enPassantSquare)
             : calculateMoves(directions, board, row, col, limitDepth);
     let legals = [];
 
@@ -197,6 +205,7 @@ export function makeMovesOnBoardMatrix(
     fromFile,
     toRank,
     toFile,
+    enPassantSquare,
 ) {
     const fromRow = fromRank - 1,
         fromCol = fromFile - 1,
@@ -204,6 +213,7 @@ export function makeMovesOnBoardMatrix(
         toCol = toFile - 1;
     const newBoard = board.map((row) => [...row]);
 
+    // FIXME: Clear the pawn on enpassant capture
     const originalPiece = newBoard[fromRow][fromCol];
     if (!originalPiece) return newBoard;
     const updatedPiece = {
@@ -212,6 +222,14 @@ export function makeMovesOnBoardMatrix(
         file: toCol + 1,
     };
 
+    if (enPassantSquare?.current) {
+        const dir = originalPiece.colour === "b" ? -1 : 1;
+        if (originalPiece.type === "P" && toRow === fromRow + 2 * dir) {
+            enPassantSquare.current = [+fromRank + dir, +toFile];
+        } else {
+            enPassantSquare.current = [];
+        }
+    }
     newBoard[fromRow][fromCol] = null;
     newBoard[toRow][toCol] = updatedPiece;
 

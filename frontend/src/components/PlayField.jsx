@@ -6,10 +6,10 @@ import { useState } from "react";
 import { FlippedContext } from "../contexts/FlippedContext.js";
 import { useChessGame } from "../hooks/useChessGame.js";
 
-// NOTE: Square (and piece) coordinates are marked as file-rank (colum-row)
+// WARN : Square (and piece) coordinates are marked as file-rank (colum-row)
 // Range: [1, 8]
 
-// NOTE: Whereas, board state (2D-array) uses row-column
+// WARN : Whereas, board state (2D-array) uses row-column
 // Range: [0, 7]
 
 function PlayField() {

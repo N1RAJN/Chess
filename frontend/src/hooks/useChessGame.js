@@ -10,6 +10,7 @@ import {
 export function useChessGame() {
     const whiteKing = useRef([1, 5]); // Rank, file
     const blackKing = useRef([8, 5]);
+    const enPassantSquare = useRef([]);
     const [board, setBoard] = useState(initBoard());
     const [isWhiteToMove, setIsWhiteToMove] = useState(true);
     const [checkedSquare, setCheckedSquare] = useState(null);
@@ -32,13 +33,16 @@ export function useChessGame() {
         // Select a piece
         else if (piece && (!selected || piece.colour == selected.colour)) {
             // Turn checking
-            if (!isWhiteToMove ^ (piece.colour === "b")) return;
+            if (isWhiteToMove ^ (piece.colour === "w")) return;
 
             setSelectedSquare([rank, file]);
             let oldKingCoord = isWhiteToMove
                 ? whiteKing.current
                 : blackKing.current;
-            setActiveHighlights(getLegalMoves(board, rank, file, oldKingCoord));
+
+            setActiveHighlights(
+                getLegalMoves(board, rank, file, oldKingCoord, enPassantSquare),
+            );
         }
         // Move a selected piece
         else {
@@ -48,7 +52,6 @@ export function useChessGame() {
 
             if (!isLegal) return;
 
-            // Clicked one of the highlighted square
             const [fromRank, fromFile] = selectedSquare;
 
             const newBoard = makeMovesOnBoardMatrix(
@@ -57,6 +60,7 @@ export function useChessGame() {
                 fromFile,
                 rank,
                 file,
+                enPassantSquare,
             );
             const opposingKingCoord = isWhiteToMove
                 ? blackKing.current
