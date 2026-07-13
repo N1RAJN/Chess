@@ -78,7 +78,7 @@ function calculatePawnMoves(board, row, col, enPassantSquare) {
     for (const dc of [-1, 1]) {
         const r = row + dr;
         const c = col + dc;
-        if (!inBounds(r, c)) return;
+        if (!inBounds(r, c)) continue;
         if (
             (board[r][c] !== null &&
                 board[r][c].colour !== pawn.colour &&
@@ -90,7 +90,6 @@ function calculatePawnMoves(board, row, col, enPassantSquare) {
     }
     return moves;
     // FIXME: Handle these
-    // en-passsant
     // promotions
 }
 
@@ -213,7 +212,6 @@ export function makeMovesOnBoardMatrix(
         toCol = toFile - 1;
     const newBoard = board.map((row) => [...row]);
 
-    // FIXME: Clear the pawn on enpassant capture
     const originalPiece = newBoard[fromRow][fromCol];
     if (!originalPiece) return newBoard;
     const updatedPiece = {
@@ -224,15 +222,19 @@ export function makeMovesOnBoardMatrix(
 
     if (enPassantSquare?.current) {
         const dir = originalPiece.colour === "b" ? -1 : 1;
-        if (originalPiece.type === "P" && toRow === fromRow + 2 * dir) {
-            enPassantSquare.current = [+fromRank + dir, +toFile];
-        } else {
-            enPassantSquare.current = [];
+        const [epRank, epFile] = enPassantSquare.current;
+
+        enPassantSquare.current = [];
+        if (originalPiece.type === "P") {
+            if (toRow === fromRow + 2 * dir)
+                enPassantSquare.current = [+fromRank + dir, +toFile];
+            else if (+toRank === epRank && +toFile === epFile) {
+                newBoard[epRank - dir - 1][epFile - 1] = null;
+            }
         }
     }
     newBoard[fromRow][fromCol] = null;
     newBoard[toRow][toCol] = updatedPiece;
-
     return newBoard;
 }
 
